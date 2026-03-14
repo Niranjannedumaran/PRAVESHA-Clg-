@@ -45,7 +45,7 @@ const Navbar: React.FC = () => {
       className="glass-panel"
       style={{
         position: 'fixed', top: '1rem', left: '50%', transform: 'translateX(-50%)',
-        width: '92%', maxWidth: '1200px', zIndex: 50,
+        width: '92%', maxWidth: '1200px', zIndex: 100,
         padding: '0.75rem 1.25rem', display: 'flex',
         justifyContent: 'space-between', alignItems: 'center',
         boxShadow: scrolled ? '0 8px 40px rgba(0,0,0,0.6), 0 0 20px rgba(255,42,42,0.1)' : '0 8px 32px rgba(0,0,0,0.4)',

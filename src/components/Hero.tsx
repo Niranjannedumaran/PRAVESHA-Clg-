@@ -67,16 +67,16 @@ const Hero: React.FC = () => {
               Synthesizing Technology, Celebrating Talent.<br />The ultimate engineering technical symposium.
             </p>
             {/* Info chips */}
-            <div ref={chipsRef} style={{ opacity: 0, display: 'flex', gap: '0.75rem', marginBottom: '1.25rem', flexWrap: 'wrap' }}>
+            <div ref={chipsRef} style={{ opacity: 0, display: 'flex', flexDirection: 'row', gap: '0.6rem', marginBottom: '1.25rem' }}>
               {[
-                { icon: <Calendar size={18} color="var(--neon-red)" />, label: 'DATE', value: 'APRIL 09, 2026' },
-                { icon: <Award size={18} color="var(--neon-blue)" />, label: 'PRIZE', value: 'CASH PRIZES' },
+                { icon: <Calendar size={16} color="var(--neon-red)" />, label: 'DATE', value: 'APRIL 09, 2026' },
+                { icon: <Award size={16} color="var(--neon-blue)" />, label: 'PRIZE', value: 'CASH PRIZES' },
               ].map(item => (
-                <div key={item.label} style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '10px', padding: '0.6rem 1rem' }}>
+                <div key={item.label} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '10px', padding: '0.5rem 0.75rem', flex: 1, minWidth: 0 }}>
                   {item.icon}
-                  <div>
-                    <div style={{ fontSize: '0.65rem', color: 'var(--text-secondary)', letterSpacing: '1.5px' }}>{item.label}</div>
-                    <div style={{ fontWeight: 700, fontSize: '0.9rem', fontFamily: 'Orbitron' }}>{item.value}</div>
+                  <div style={{ minWidth: 0 }}>
+                    <div style={{ fontSize: '0.6rem', color: 'var(--text-secondary)', letterSpacing: '1.5px' }}>{item.label}</div>
+                    <div style={{ fontWeight: 700, fontSize: 'clamp(0.75rem, 2.5vw, 0.9rem)', fontFamily: 'Orbitron', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{item.value}</div>
                   </div>
                 </div>
               ))}
@@ -84,8 +84,8 @@ const Hero: React.FC = () => {
 
             {/* Countdown */}
             <div ref={countdownRef} style={{ opacity: 0, marginBottom: '1.5rem' }}>
-              <div style={{ fontSize: '0.7rem', color: 'var(--text-secondary)', letterSpacing: '3px', marginBottom: '0.5rem' }}>EVENT STARTS IN</div>
-              <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+              <div style={{ fontSize: '0.65rem', color: 'var(--text-secondary)', letterSpacing: '3px', marginBottom: '0.5rem' }}>EVENT STARTS IN</div>
+              <div className="countdown-row">
                 {[{ val: days, label: 'DAYS' }, { val: hours, label: 'HRS' }, { val: minutes, label: 'MIN' }, { val: seconds, label: 'SEC' }].map(({ val, label }) => (
                   <div key={label} className="countdown-box">
                     <span className="countdown-num">{String(val).padStart(2, '0')}</span>

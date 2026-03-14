@@ -147,10 +147,10 @@ const EventModal = ({ event, onClose }: { event: Event; onClose: () => void }) =
 
   return (
     <div ref={overlayRef} onClick={handleClose}
-      style={{ position: 'fixed', inset: 0, zIndex: 100, background: 'rgba(0,0,0,0.75)', backdropFilter: 'blur(6px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1.5rem' }}
+      style={{ position: 'fixed', inset: 0, zIndex: 200, background: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(6px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 'clamp(0.75rem, 4vw, 1.5rem)' }}
     >
       <div ref={boxRef} onClick={e => e.stopPropagation()} className="glass-panel"
-        style={{ width: '100%', maxWidth: '560px', maxHeight: '88vh', overflowY: 'auto', padding: '2.5rem', borderColor: `${event.color}40`, position: 'relative' }}
+        style={{ width: '100%', maxWidth: '560px', maxHeight: '90vh', overflowY: 'auto', padding: 'clamp(1.25rem, 5vw, 2.5rem)', borderColor: `${event.color}40`, position: 'relative', overflowX: 'hidden' }}
       >
           {/* Top accent */}
           <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '3px', background: `linear-gradient(90deg, transparent, ${event.color}, transparent)`, borderRadius: '16px 16px 0 0' }} />
@@ -178,9 +178,9 @@ const EventModal = ({ event, onClose }: { event: Event; onClose: () => void }) =
               { label: 'Duration', val: event.duration },
               { label: 'Venue', val: event.venue },
             ].map(m => (
-              <div key={m.label} style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '8px', padding: '0.5rem 1rem' }}>
-                <div style={{ fontSize: '0.65rem', color: 'var(--text-secondary)', letterSpacing: '1.5px', marginBottom: '0.2rem' }}>{m.label.toUpperCase()}</div>
-                <div style={{ fontSize: '0.9rem', fontWeight: 700, fontFamily: 'Orbitron', color: event.color }}>{m.val}</div>
+              <div key={m.label} style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '8px', padding: '0.5rem 0.85rem', flex: '1 1 auto', minWidth: 'min(120px, 100%)' }}>
+                <div style={{ fontSize: '0.6rem', color: 'var(--text-secondary)', letterSpacing: '1.5px', marginBottom: '0.2rem' }}>{m.label.toUpperCase()}</div>
+                <div style={{ fontSize: 'clamp(0.78rem, 2vw, 0.9rem)', fontWeight: 700, fontFamily: 'Orbitron', color: event.color }}>{m.val}</div>
               </div>
             ))}
           </div>
@@ -206,7 +206,7 @@ const EventModal = ({ event, onClose }: { event: Event; onClose: () => void }) =
             target="_blank"
             rel="noreferrer"
             className="btn btn-primary"
-            style={{ width: '100%', justifyContent: 'center', background: `linear-gradient(135deg, ${event.color === '#ff2a2a' || event.color === '#00d4ff' ? '#ff2a2a, #cc0000' : '#a855f7, #7c3aed'})` }}
+            style={{ width: '100%', justifyContent: 'center', display: 'flex', boxSizing: 'border-box', background: `linear-gradient(135deg, ${event.color === '#ff2a2a' || event.color === '#00d4ff' ? '#ff2a2a, #cc0000' : '#a855f7, #7c3aed'})` }}
           >
             <ExternalLink size={16} /> Register for {event.title}
           </a>
