@@ -3,6 +3,7 @@ import Hero from './components/Hero';
 import About from './components/About';
 import Events from './components/Events';
 import Coordinators from './components/Coordinators';
+import ComboEvent from './components/ComboEvent';
 import Footer from './components/Footer';
 
 function App() {
@@ -18,6 +19,7 @@ function App() {
         <Hero />
         <About />
         <Events />
+        <ComboEvent />
         <Coordinators />
       </main>
       <Footer />

@@ -21,13 +21,17 @@ const studentCoordinators = [
 ];
 
 const PersonRow = ({ name, phone, color }: { name: string; phone: string; color: string }) => (
-  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.9rem 1rem', borderRadius: '10px', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)', transition: 'background 0.2s' }}
+  <div style={{ display: 'grid', gridTemplateColumns: '1fr auto', alignItems: 'center', padding: '0.9rem 1.25rem', borderRadius: '10px', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)', transition: 'background 0.2s' }}
     onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.06)')}
     onMouseLeave={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.03)')}
   >
-    <span style={{ fontSize: '1rem', fontWeight: 600 }}>{name}</span>
-    <a href={`tel:${phone}`} style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color, fontFamily: 'Orbitron', fontSize: '0.8rem', letterSpacing: '1px' }}>
-      <Phone size={13} /> {phone}
+    <span style={{ fontSize: '1rem', fontWeight: 600, color: 'var(--text-primary)' }}>{name}</span>
+    <a href={`tel:${phone}`} style={{ 
+      display: 'flex', alignItems: 'center', gap: '0.6rem', color, 
+      fontFamily: 'Orbitron', fontSize: '0.85rem', letterSpacing: '0.5px',
+      fontWeight: 700, paddingLeft: '1.5rem'
+    }}>
+      <Phone size={14} style={{ opacity: 0.8 }} /> {phone}
     </a>
   </div>
 );
