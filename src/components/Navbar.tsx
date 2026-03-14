@@ -1,0 +1,141 @@
+import React, { useEffect, useState } from 'react';
+import { Menu, X } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+
+const links = [
+  { label: 'Home', href: '#home' },
+  { label: 'About', href: '#about' },
+  { label: 'Events', href: '#events' },
+  { label: 'Coordinators', href: '#coordinators' },
+];
+
+const Navbar: React.FC = () => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const [active, setActive] = useState('#home');
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 30);
+    window.addEventListener('scroll', onScroll);
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
+  return (
+    <motion.nav
+      initial={{ y: -80, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      transition={{ duration: 0.6, ease: 'easeOut' }}
+      className="glass-panel"
+      style={{
+        position: 'fixed',
+        top: '1rem',
+        left: '50%',
+        transform: 'translateX(-50%)',
+        width: '92%',
+        maxWidth: '1200px',
+        zIndex: 50,
+        padding: '0.75rem 1.25rem',
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        boxShadow: scrolled
+          ? '0 8px 40px rgba(0,0,0,0.6), 0 0 20px rgba(255,42,42,0.1)'
+          : '0 8px 32px rgba(0,0,0,0.4)',
+        transition: 'box-shadow 0.3s ease',
+      }}
+    >
+      {/* Logo */}
+      <div style={{ fontFamily: 'Orbitron', fontWeight: 900, fontSize: 'clamp(1rem, 4vw, 1.4rem)', display: 'flex', alignItems: 'center', gap: '0.5rem', minWidth: 0 }}>
+        <div className="pulse-dot" style={{ flexShrink: 0 }} />
+        <span className="glitch" data-text="PRAVESHA" style={{ color: 'var(--neon-red)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>PRAVESHA</span>
+      </div>
+
+      {/* Desktop Links */}
+      <div style={{ display: 'none', gap: '0.25rem', alignItems: 'center' }} className="desktop-nav">
+        {links.map(link => (
+          <a
+            key={link.href}
+            href={link.href}
+            onClick={() => setActive(link.href)}
+            style={{
+              color: active === link.href ? 'var(--neon-blue)' : 'var(--text-secondary)',
+              fontWeight: 600,
+              fontSize: '0.95rem',
+              padding: '0.5rem 1rem',
+              borderRadius: '8px',
+              background: active === link.href ? 'rgba(0,212,255,0.08)' : 'transparent',
+              transition: 'all 0.2s',
+              letterSpacing: '0.5px',
+            }}
+          >
+            {link.label}
+          </a>
+        ))}
+        <button className="btn btn-primary" style={{ marginLeft: '1rem', padding: '0.6rem 1.4rem' }}>
+          Register
+        </button>
+      </div>
+
+      {/* Mobile Toggle */}
+      <div
+        className="mobile-toggle"
+        style={{ display: 'flex', cursor: 'pointer', padding: '0.4rem', borderRadius: '8px', background: 'rgba(255,255,255,0.05)' }}
+        onClick={() => setIsOpen(!isOpen)}
+      >
+        {isOpen ? <X color="var(--neon-red)" size={22} /> : <Menu color="var(--neon-blue)" size={22} />}
+      </div>
+
+      {/* Mobile Menu */}
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: -10, scale: 0.97 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -10, scale: 0.97 }}
+            transition={{ duration: 0.2 }}
+            className="glass-panel"
+            style={{
+              position: 'absolute',
+              top: 'calc(100% + 0.75rem)',
+              left: 0,
+              width: '100%',
+              padding: '1.5rem',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '0.5rem',
+            }}
+          >
+            {links.map(link => (
+              <a
+                key={link.href}
+                href={link.href}
+                onClick={() => { setIsOpen(false); setActive(link.href); }}
+                style={{
+                  color: 'var(--text-primary)',
+                  fontWeight: 600,
+                  fontSize: '1.1rem',
+                  padding: '0.75rem 1rem',
+                  borderRadius: '8px',
+                  background: 'rgba(255,255,255,0.03)',
+                  borderLeft: '3px solid var(--neon-blue)',
+                }}
+              >
+                {link.label}
+              </a>
+            ))}
+            <button className="btn btn-primary" style={{ width: '100%', marginTop: '0.5rem' }}>Register</button>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <style>{`
+        @media (min-width: 768px) {
+          .desktop-nav { display: flex !important; }
+          .mobile-toggle { display: none !important; }
+        }
+      `}</style>
+    </motion.nav>
+  );
+};
+
+export default Navbar;
