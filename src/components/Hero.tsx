@@ -60,6 +60,7 @@ const Hero: React.FC = () => {
             </div>
             <h1 ref={h1Ref} style={{ opacity: 0, fontSize: 'clamp(1.6rem, 5vw, 4rem)', lineHeight: 1.1, marginBottom: '0.9rem', color: '#fff' }}>
               NATIONAL LEVEL<br />
+              SYMPOSIUM<br />
               <span className="glitch" data-text="PRAVESHA" style={{ color: 'var(--neon-red)' }}>PRAVESHA</span><br />
               <span style={{ background: 'linear-gradient(135deg,var(--neon-blue),#7dd3fc)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>2K26</span>
             </h1>
