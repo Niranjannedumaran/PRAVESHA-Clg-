@@ -1,4 +1,4 @@
-import React, { useRef, useMemo } from 'react';
+import React, { useRef, useMemo, useCallback } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { Float, Stars } from '@react-three/drei';
 import * as THREE from 'three';
@@ -67,29 +67,112 @@ const Particles = () => {
   );
 };
 
-const Scene = () => (
+// Drag state shared via ref passed down
+interface DragState {
+  isDragging: boolean;
+  lastX: number;
+  lastY: number;
+  velocityX: number;
+  velocityY: number;
+}
+
+const SceneGroup = ({ dragState }: { dragState: React.MutableRefObject<DragState> }) => {
+  const groupRef = useRef<THREE.Group>(null);
+
+  useFrame((_, delta) => {
+    if (!groupRef.current) return;
+    const ds = dragState.current;
+
+    if (ds.isDragging) {
+      // Apply drag rotation directly
+      groupRef.current.rotation.y += ds.velocityX * delta * 60;
+      groupRef.current.rotation.x += ds.velocityY * delta * 60;
+    } else {
+      // Inertia: decay velocity and keep spinning
+      ds.velocityX *= 0.92;
+      ds.velocityY *= 0.92;
+      groupRef.current.rotation.y += ds.velocityX * delta * 60;
+      groupRef.current.rotation.x += ds.velocityY * delta * 60;
+
+      // Gentle auto-spin when idle
+      if (Math.abs(ds.velocityX) < 0.0005) {
+        groupRef.current.rotation.y += delta * 0.15;
+      }
+    }
+
+    // Clamp vertical tilt so it doesn't flip upside down
+    groupRef.current.rotation.x = THREE.MathUtils.clamp(groupRef.current.rotation.x, -1.2, 1.2);
+  });
+
+  return (
+    <group ref={groupRef}>
+      <Core />
+      <Ring radius={2.2} tube={0.018} color="#00d4ff" speed={0.6} rotAxis="x" />
+      <Ring radius={2.6} tube={0.014} color="#ff2a2a" speed={0.4} rotAxis="y" />
+      <Ring radius={3.0} tube={0.011} color="#a855f7" speed={0.25} rotAxis="z" />
+      <OrbitDot radius={2.2} speed={0.8} offset={0} color="#00d4ff" />
+      <OrbitDot radius={2.6} speed={0.6} offset={2} color="#ff2a2a" />
+      <OrbitDot radius={3.0} speed={0.5} offset={4} color="#a855f7" />
+    </group>
+  );
+};
+
+const Scene = ({ dragState }: { dragState: React.MutableRefObject<DragState> }) => (
   <>
     <ambientLight intensity={0.3} />
     <pointLight position={[5, 5, 5]} intensity={2} color="#ff2a2a" />
     <pointLight position={[-5, -3, -5]} intensity={1.5} color="#00d4ff" />
     <Stars radius={30} depth={20} count={800} factor={2} fade speed={0.5} />
     <Particles />
-    <Core />
-    <Ring radius={2.2} tube={0.018} color="#00d4ff" speed={0.6} rotAxis="x" />
-    <Ring radius={2.6} tube={0.014} color="#ff2a2a" speed={0.4} rotAxis="y" />
-    <Ring radius={3.0} tube={0.011} color="#a855f7" speed={0.25} rotAxis="z" />
-    <OrbitDot radius={2.2} speed={0.8} offset={0} color="#00d4ff" />
-    <OrbitDot radius={2.6} speed={0.6} offset={2} color="#ff2a2a" />
-    <OrbitDot radius={3.0} speed={0.5} offset={4} color="#a855f7" />
+    <SceneGroup dragState={dragState} />
   </>
 );
 
-const HeroScene: React.FC = () => (
-  <div style={{ width: '100%', height: '100%' }}>
-    <Canvas camera={{ position: [0, 0, 7], fov: 50 }} gl={{ antialias: true, alpha: true }} style={{ background: 'transparent' }}>
-      <Scene />
-    </Canvas>
-  </div>
-);
+const HeroScene: React.FC = () => {
+  const dragState = useRef<DragState>({
+    isDragging: false,
+    lastX: 0,
+    lastY: 0,
+    velocityX: 0,
+    velocityY: 0,
+  });
+
+  const onPointerDown = useCallback((e: React.PointerEvent) => {
+    dragState.current.isDragging = true;
+    dragState.current.lastX = e.clientX;
+    dragState.current.lastY = e.clientY;
+    dragState.current.velocityX = 0;
+    dragState.current.velocityY = 0;
+    (e.target as HTMLElement).setPointerCapture(e.pointerId);
+  }, []);
+
+  const onPointerMove = useCallback((e: React.PointerEvent) => {
+    if (!dragState.current.isDragging) return;
+    const dx = e.clientX - dragState.current.lastX;
+    const dy = e.clientY - dragState.current.lastY;
+    dragState.current.velocityX = dx * 0.003;
+    dragState.current.velocityY = dy * 0.003;
+    dragState.current.lastX = e.clientX;
+    dragState.current.lastY = e.clientY;
+  }, []);
+
+  const onPointerUp = useCallback(() => {
+    dragState.current.isDragging = false;
+  }, []);
+
+  return (
+    <div
+      style={{ width: '100%', height: '100%', cursor: 'grab' }}
+      onPointerDown={onPointerDown}
+      onPointerMove={onPointerMove}
+      onPointerUp={onPointerUp}
+      onPointerLeave={onPointerUp}
+    >
+      <Canvas camera={{ position: [0, 0, 7], fov: 50 }} gl={{ antialias: true, alpha: true }} style={{ background: 'transparent' }}>
+        <Scene dragState={dragState} />
+      </Canvas>
+    </div>
+  );
+};
 
 export default HeroScene;
