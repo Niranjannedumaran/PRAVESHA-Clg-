@@ -10,7 +10,7 @@ const Footer: React.FC = () => (
         <div>
           <h2 style={{ fontSize: '1.6rem', color: 'var(--neon-red)', marginBottom: '1rem', fontFamily: 'Orbitron' }}>PRAVESHA 2K26</h2>
           <p style={{ color: 'var(--text-secondary)', lineHeight: 1.8, marginBottom: '1.5rem', maxWidth: '320px' }}>
-            National Level Technical Symposium organized by the Department of Computer Science and Engineering, VELS VISTAS.
+            National Level Technical Symposium organized by the Department of Computer Science and Engineering, VISTAS.
           </p>
           <a
             href="https://instagram.com/PRAVESHA_2K26"
@@ -63,7 +63,7 @@ const Footer: React.FC = () => (
           &copy; 2026 Pravesha Symposium. All rights reserved.
         </span>
         <span style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-          Made with <Heart size={14} color="var(--neon-red)" fill="var(--neon-red)" /> by CSE Dept, VELS VISTAS
+          Made with <Heart size={14} color="var(--neon-red)" fill="var(--neon-red)" /> by CSE Dept, VISTAS
         </span>
       </div>
     </div>

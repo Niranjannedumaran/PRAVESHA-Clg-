@@ -8,8 +8,8 @@
   --metallic-red: #8b0000;
   --neon-blue: #00d4ff;
   --neon-purple: #a855f7;
-  --glass-bg: rgba(15, 15, 25, 0.7);
-  --glass-border: rgba(255, 42, 42, 0.25);
+  --glass-bg: rgba(8, 8, 12, 1);
+  --glass-border: rgba(255, 42, 42, 0.4);
   font-family: 'Rajdhani', sans-serif;
   line-height: 1.5;
   font-weight: 400;
@@ -69,7 +69,7 @@ a:hover { text-shadow: 0 0 10px var(--neon-blue); }
 
 /* Countdown — never wraps, always 4 boxes in a row */
 .countdown-row { display: flex; gap: 0.4rem; flex-wrap: nowrap; width: 100%; }
-.countdown-box { display: flex; flex-direction: column; align-items: center; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; flex: 1; padding: clamp(0.4rem,1.5vw,1rem) 0; min-width: 0; }
+.countdown-box { display: flex; flex-direction: column; align-items: center; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; flex: 1; padding: clamp(0.35rem, 1.2vw, 0.8rem) 0; min-width: 0; }
 .countdown-num { font-family: 'Orbitron', sans-serif; font-size: clamp(1rem,5vw,2.2rem); font-weight: 900; line-height: 1; background: linear-gradient(135deg, #fff 30%, var(--neon-blue)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
 .countdown-label { font-size: clamp(0.48rem,1.2vw,0.65rem); letter-spacing: 1.5px; color: var(--text-secondary); margin-top: 0.3rem; }
 
@@ -93,7 +93,7 @@ a:hover { text-shadow: 0 0 10px var(--neon-blue); }
 .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.25rem; }
 .highlights-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.25rem; }
 .events-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(280px, 100%), 1fr)); gap: 1.5rem; }
-.coords-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(320px, 100%), 1fr)); gap: 2rem; }
+.coords-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(450px, 100%), 1fr)); gap: 2rem; }
 .footer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(200px, 100%), 1fr)); gap: 2rem; }
 
 .fee-banner { display: flex; flex-wrap: wrap; justify-content: center; gap: 1rem; }
@@ -125,18 +125,18 @@ nav.glass-panel { z-index: 100; }
 
 /* ===== ≤600px mobile ===== */
 @media (max-width: 600px) {
-  .hero-canvas { height: 230px; }
+  .hero-canvas { height: 200px; }
   .events-grid { grid-template-columns: 1fr; gap: 0.85rem; }
   .coords-grid { grid-template-columns: 1fr; }
   .footer-grid { grid-template-columns: 1fr; gap: 1.25rem; }
-  .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 0.75rem; }
+  .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 0.6rem; }
   .highlights-grid { grid-template-columns: 1fr; }
-  .fee-banner { flex-direction: column; align-items: flex-start; }
+  .fee-banner { flex-direction: column; align-items: center; text-align: center; gap: 0.75rem; }
   .fee-divider { display: none; }
-  .glass-panel { border-radius: 10px; }
-  #about { padding: 3rem 0 !important; }
-  #events { padding: 3rem 0 !important; }
-  #coordinators { padding: 3rem 0 !important; }
+  .glass-panel { border-radius: 10px; padding: 1.25rem !important; }
+  #about { padding: 2.5rem 0 !important; }
+  #events { padding: 2.5rem 0 !important; }
+  #coordinators { padding: 2.5rem 0 !important; }
 }
 
 /* ===== ≤480px ===== */

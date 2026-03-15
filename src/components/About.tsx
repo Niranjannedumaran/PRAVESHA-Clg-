@@ -15,8 +15,8 @@ const stats = [
 const highlights = [
   { icon: Cpu, title: 'Technical Events', desc: 'Paper Presentation, Project Expo, Coding Challenges, UI Design and more — test your skills across 6 technical domains.' },
   { icon: Trophy, title: 'Cash Prizes', desc: 'Win exciting cash prizes across all events. Registration fee: ₹150/event or ₹200 combo for two events.' },
-  { icon: MapPin, title: 'Venue', desc: 'VELS Institute of Science, Technology & Advanced Studies (VISTAS), Pallavaram, Thalambur, Periyapalayam — Chennai.' },
-  { icon: Globe, title: 'Open to All', desc: 'Open to students from all colleges across India. Register before March 26 to secure your spot.' },
+  { icon: MapPin, title: 'Venue', desc: 'VELS Institute of Science, Technology & Advanced Studies (VISTAS), Pallavaram — Chennai.' },
+  { icon: Globe, title: 'Open to All', desc: 'Open to students from all colleges across India. Last date for online registration is March 26 — on-spot registration will not be available.' },
 ];
 
 const About: React.FC = () => {
@@ -70,7 +70,7 @@ const About: React.FC = () => {
           </h2>
           <p style={{ color: 'var(--text-secondary)', fontSize: '1.05rem', maxWidth: '680px', margin: '0 auto', lineHeight: 1.8 }}>
             PRAVESHA 2K26 is a <span style={{ color: 'white', fontWeight: 600 }}>National Level Technical Symposium</span> organized by the
-            Department of Computer Science and Engineering, VELS VISTAS. It brings together the brightest minds
+            Department of Computer Science and Engineering, VISTAS. It brings together the brightest minds
             from engineering colleges across India to compete, collaborate, and celebrate technology.
           </p>
         </div>
@@ -109,16 +109,15 @@ const About: React.FC = () => {
         >
           <div>
             <div style={{ fontSize: '0.7rem', color: 'var(--neon-blue)', letterSpacing: '3px', marginBottom: '0.4rem' }}>ORGANISED BY</div>
-            <div style={{ fontFamily: 'Orbitron', fontWeight: 700, fontSize: 'clamp(0.9rem, 2vw, 1.1rem)', color: 'white' }}>Dept. of Computer Science & Engineering</div>
-            <div style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginTop: '0.25rem' }}>VELS Institute of Science, Technology & Advanced Studies (VISTAS)</div>
-            <div style={{ color: 'var(--text-secondary)', fontSize: '0.85rem' }}>Pallavaram, Thalambur, Periyapalayam — Chennai</div>
+            <div style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginTop: '0.25rem' }}>Organized by the Dept. of Computer Science & Engineering</div>
+            <div style={{ color: 'var(--text-secondary)', fontSize: '0.85rem' }}>Pallavaram — Chennai</div>
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', alignItems: 'flex-end' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
               <div className="pulse-dot" />
               <span style={{ fontFamily: 'Orbitron', fontSize: '0.85rem', color: 'var(--neon-red)' }}>APRIL 09, 2026</span>
             </div>
-            <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Register before <span style={{ color: 'var(--neon-blue)', fontWeight: 600 }}>March 26</span></div>
+            <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Last date for online registration: <span style={{ color: 'var(--neon-blue)', fontWeight: 600 }}>March 26</span></div>
             <a href="mailto:pravesha2k26@gmail.com" style={{ fontSize: '0.82rem', color: 'var(--neon-blue)' }}>pravesha2k26@gmail.com</a>
           </div>
         </div>

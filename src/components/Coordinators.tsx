@@ -9,7 +9,7 @@ const staffCoordinators = [
   { name: 'Dr. A. Rajesh', phone: '9750222225' },
   { name: 'Dr. A. Saritha', phone: '9820305258' },
   { name: 'Dr. P. Thilakavathy', phone: '9920026608' },
-  { name: 'Mr. N. Udayakumar', phone: '82248777606' },
+  { name: 'Mr. N. Udayakumar', phone: '8228777606' },
 ];
 
 const studentCoordinators = [
@@ -21,17 +21,21 @@ const studentCoordinators = [
 ];
 
 const PersonRow = ({ name, phone, color }: { name: string; phone: string; color: string }) => (
-  <div style={{ display: 'grid', gridTemplateColumns: '1fr auto', alignItems: 'center', padding: '0.9rem 1.25rem', borderRadius: '10px', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)', transition: 'background 0.2s' }}
+  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.5rem 1rem', padding: '0.9rem 1.25rem', borderRadius: '10px', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)', transition: 'background 0.2s', position: 'relative', minHeight: '3.5rem' }}
     onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.06)')}
     onMouseLeave={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.03)')}
   >
-    <span style={{ fontSize: '1rem', fontWeight: 600, color: 'var(--text-primary)' }}>{name}</span>
+    <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', flex: '1' }}>
+      <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: color, flexShrink: 0 }} />
+      <span style={{ fontSize: '1rem', fontWeight: 600, color: 'var(--text-primary)', whiteSpace: 'nowrap' }}>{name}</span>
+    </div>
     <a href={`tel:${phone}`} style={{ 
       display: 'flex', alignItems: 'center', gap: '0.6rem', color, 
-      fontFamily: 'Orbitron', fontSize: '0.85rem', letterSpacing: '0.5px',
-      fontWeight: 700, paddingLeft: '1.5rem'
+      fontFamily: 'Orbitron', fontSize: 'clamp(0.74rem, 2.2vw, 0.85rem)', letterSpacing: '0.5px',
+      fontWeight: 700, background: `${color}10`, padding: '0.3rem 0.6rem', borderRadius: '6px', border: `1px solid ${color}20`,
+      transition: 'all 0.2s', whiteSpace: 'nowrap'
     }}>
-      <Phone size={14} style={{ opacity: 0.8 }} /> {phone}
+      <Phone size={13} style={{ opacity: 0.8 }} /> {phone}
     </a>
   </div>
 );

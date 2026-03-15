@@ -56,7 +56,7 @@ const Hero: React.FC = () => {
           {/* LEFT */}
           <div>
             <div style={{ marginBottom: '0.75rem' }}>
-              <span ref={tagRef} className="section-tag" style={{ opacity: 0 }}>VELS VISTAS · DEPT. OF CSE PRESENTS</span>
+              <span ref={tagRef} className="section-tag" style={{ opacity: 0 }}>DEPARTMENT OF COMPUTER SCIENCE AND ENGINEERING PRESENTS</span>
             </div>
             <h1 ref={h1Ref} style={{ opacity: 0, fontSize: 'clamp(1.6rem, 5vw, 4rem)', lineHeight: 1.1, marginBottom: '0.9rem', color: '#fff' }}>
               NATIONAL LEVEL<br />
