@@ -1,177 +1,196 @@
-import React, { useRef, useMemo, useCallback } from 'react';
-import { Canvas, useFrame } from '@react-three/fiber';
-import { Float, Stars } from '@react-three/drei';
+import React, { useEffect, useRef } from 'react';
 import * as THREE from 'three';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 
-const Ring = ({ radius, tube, color, speed, rotAxis }: { radius: number; tube: number; color: string; speed: number; rotAxis: 'x' | 'y' | 'z' }) => {
-  const ref = useRef<THREE.Mesh>(null);
-  useFrame((_, delta) => { if (ref.current) ref.current.rotation[rotAxis] += delta * speed; });
-  return (
-    <mesh ref={ref}>
-      <torusGeometry args={[radius, tube, 16, 100]} />
-      <meshStandardMaterial color={color} emissive={color} emissiveIntensity={0.8} wireframe />
-    </mesh>
-  );
-};
+const NEON_RED = 0xff2a2a;
+const NEON_RED_DIM = 0x661111;
+const NEON_BLUE = 0x00d4ff;
+const NODE_COUNT = 55;
+const LAYER_COUNT = 4;
 
-const OrbitDot = ({ radius, speed, offset, color }: { radius: number; speed: number; offset: number; color: string }) => {
-  const ref = useRef<THREE.Mesh>(null);
-  useFrame(({ clock }) => {
-    if (!ref.current) return;
-    const t = clock.getElapsedTime() * speed + offset;
-    ref.current.position.set(Math.cos(t) * radius, Math.sin(t * 0.6) * 0.8, Math.sin(t) * radius);
+function buildNeuralNetwork(scene: THREE.Scene) {
+  const nodePositions: THREE.Vector3[] = [];
+  const geomDispose: THREE.BufferGeometry[] = [];
+  const matDispose: THREE.Material[] = [];
+
+  // ── Nodes ─────────────────────────────────────────────────────────────────
+  const nodeMat = new THREE.MeshStandardMaterial({
+    color: NEON_RED,
+    emissive: NEON_RED,
+    emissiveIntensity: 1.2,
+    roughness: 0.3,
+    metalness: 0.6,
   });
-  return (
-    <mesh ref={ref}>
-      <sphereGeometry args={[0.1, 16, 16]} />
-      <meshStandardMaterial color={color} emissive={color} emissiveIntensity={2} />
-    </mesh>
-  );
-};
+  matDispose.push(nodeMat);
 
-const Core = () => {
-  const ref = useRef<THREE.Mesh>(null);
-  useFrame((_, delta) => {
-    if (!ref.current) return;
-    ref.current.rotation.x += delta * 0.3;
-    ref.current.rotation.y += delta * 0.5;
+  for (let i = 0; i < NODE_COUNT; i++) {
+    const layer = i % LAYER_COUNT;
+    const x = (layer - (LAYER_COUNT - 1) / 2) * 3.2 + (Math.random() - 0.5) * 1.2;
+    const y = (Math.random() - 0.5) * 6;
+    const z = (Math.random() - 0.5) * 5;
+    const pos = new THREE.Vector3(x, y, z);
+    nodePositions.push(pos);
+
+    const radius = 0.08 + Math.random() * 0.1;
+    const geo = new THREE.SphereGeometry(radius, 12, 12);
+    geomDispose.push(geo);
+    const mesh = new THREE.Mesh(geo, nodeMat);
+    mesh.position.copy(pos);
+    scene.add(mesh);
+  }
+
+  // ── Edges ─────────────────────────────────────────────────────────────────
+  const edges: [number, number][] = [];
+  const edgeMat = new THREE.LineBasicMaterial({
+    color: NEON_RED_DIM,
+    transparent: true,
+    opacity: 0.35,
   });
-  return (
-    <Float speed={2} rotationIntensity={0.4} floatIntensity={0.6}>
-      <mesh ref={ref}>
-        <icosahedronGeometry args={[1.1, 1]} />
-        <meshStandardMaterial color="#ff2a2a" emissive="#ff0000" emissiveIntensity={0.5} roughness={0.1} metalness={0.9} />
-      </mesh>
-    </Float>
-  );
-};
+  matDispose.push(edgeMat);
 
-const Particles = () => {
-  const count = 220;
-  const positions = useMemo(() => {
-    const arr = new Float32Array(count * 3);
-    for (let i = 0; i < count; i++) {
-      arr[i * 3]     = (Math.random() - 0.5) * 14;
-      arr[i * 3 + 1] = (Math.random() - 0.5) * 14;
-      arr[i * 3 + 2] = (Math.random() - 0.5) * 14;
-    }
-    return arr;
-  }, []);
-  return (
-    <points>
-      <bufferGeometry>
-        <bufferAttribute attach="attributes-position" args={[positions, 3]} />
-      </bufferGeometry>
-      <pointsMaterial size={0.045} color="#00d4ff" transparent opacity={0.6} sizeAttenuation />
-    </points>
-  );
-};
-
-// Drag state shared via ref passed down
-interface DragState {
-  isDragging: boolean;
-  lastX: number;
-  lastY: number;
-  velocityX: number;
-  velocityY: number;
-}
-
-const SceneGroup = ({ dragState }: { dragState: React.MutableRefObject<DragState> }) => {
-  const groupRef = useRef<THREE.Group>(null);
-
-  useFrame((_, delta) => {
-    if (!groupRef.current) return;
-    const ds = dragState.current;
-
-    if (ds.isDragging) {
-      // Apply drag rotation directly
-      groupRef.current.rotation.y += ds.velocityX * delta * 60;
-      groupRef.current.rotation.x += ds.velocityY * delta * 60;
-    } else {
-      // Inertia: decay velocity and keep spinning
-      ds.velocityX *= 0.92;
-      ds.velocityY *= 0.92;
-      groupRef.current.rotation.y += ds.velocityX * delta * 60;
-      groupRef.current.rotation.x += ds.velocityY * delta * 60;
-
-      // Gentle auto-spin when idle
-      if (Math.abs(ds.velocityX) < 0.0005) {
-        groupRef.current.rotation.y += delta * 0.15;
+  for (let a = 0; a < NODE_COUNT; a++) {
+    // Connect to ~3 neighbours in the next layer
+    let connected = 0;
+    for (let b = a + 1; b < NODE_COUNT && connected < 3; b++) {
+      const dist = nodePositions[a].distanceTo(nodePositions[b]);
+      if (dist < 4.5) {
+        edges.push([a, b]);
+        connected++;
+        const points = [nodePositions[a].clone(), nodePositions[b].clone()];
+        const geo = new THREE.BufferGeometry().setFromPoints(points);
+        geomDispose.push(geo);
+        const line = new THREE.Line(geo, edgeMat);
+        scene.add(line);
       }
     }
+  }
 
-    // Clamp vertical tilt so it doesn't flip upside down
-    groupRef.current.rotation.x = THREE.MathUtils.clamp(groupRef.current.rotation.x, -1.2, 1.2);
+  // ── Data Pulses ────────────────────────────────────────────────────────────
+  const pulses: { mesh: THREE.Mesh; curve: THREE.CatmullRomCurve3; t: number; speed: number }[] = [];
+  const pulseMat = new THREE.MeshBasicMaterial({ color: NEON_BLUE });
+  matDispose.push(pulseMat);
+
+  // Pick 20 random edges for pulses
+  const pickedEdges = [...edges].sort(() => Math.random() - 0.5).slice(0, 20);
+  pickedEdges.forEach(([a, b]) => {
+    const mid = nodePositions[a].clone().lerp(nodePositions[b], 0.5);
+    mid.y += (Math.random() - 0.5) * 0.8;
+    const curve = new THREE.CatmullRomCurve3([
+      nodePositions[a].clone(),
+      mid,
+      nodePositions[b].clone(),
+    ]);
+    const geo = new THREE.SphereGeometry(0.06, 8, 8);
+    geomDispose.push(geo);
+    const mesh = new THREE.Mesh(geo, pulseMat);
+    scene.add(mesh);
+    pulses.push({ mesh, curve, t: Math.random(), speed: 0.003 + Math.random() * 0.004 });
   });
 
-  return (
-    <group ref={groupRef}>
-      <Core />
-      <Ring radius={2.2} tube={0.018} color="#00d4ff" speed={0.6} rotAxis="x" />
-      <Ring radius={2.6} tube={0.014} color="#ff2a2a" speed={0.4} rotAxis="y" />
-      <Ring radius={3.0} tube={0.011} color="#a855f7" speed={0.25} rotAxis="z" />
-      <OrbitDot radius={2.2} speed={0.8} offset={0} color="#00d4ff" />
-      <OrbitDot radius={2.6} speed={0.6} offset={2} color="#ff2a2a" />
-      <OrbitDot radius={3.0} speed={0.5} offset={4} color="#a855f7" />
-    </group>
-  );
-};
-
-const Scene = ({ dragState }: { dragState: React.MutableRefObject<DragState> }) => (
-  <>
-    <ambientLight intensity={0.3} />
-    <pointLight position={[5, 5, 5]} intensity={2} color="#ff2a2a" />
-    <pointLight position={[-5, -3, -5]} intensity={1.5} color="#00d4ff" />
-    <Stars radius={30} depth={20} count={800} factor={2} fade speed={0.5} />
-    <Particles />
-    <SceneGroup dragState={dragState} />
-  </>
-);
+  return { pulses, geomDispose, matDispose };
+}
 
 const HeroScene: React.FC = () => {
-  const dragState = useRef<DragState>({
-    isDragging: false,
-    lastX: 0,
-    lastY: 0,
-    velocityX: 0,
-    velocityY: 0,
-  });
+  const mountRef = useRef<HTMLDivElement>(null);
 
-  const onPointerDown = useCallback((e: React.PointerEvent) => {
-    dragState.current.isDragging = true;
-    dragState.current.lastX = e.clientX;
-    dragState.current.lastY = e.clientY;
-    dragState.current.velocityX = 0;
-    dragState.current.velocityY = 0;
-    (e.target as HTMLElement).setPointerCapture(e.pointerId);
-  }, []);
+  useEffect(() => {
+    const container = mountRef.current;
+    if (!container) return;
 
-  const onPointerMove = useCallback((e: React.PointerEvent) => {
-    if (!dragState.current.isDragging) return;
-    const dx = e.clientX - dragState.current.lastX;
-    const dy = e.clientY - dragState.current.lastY;
-    dragState.current.velocityX = dx * 0.003;
-    dragState.current.velocityY = dy * 0.003;
-    dragState.current.lastX = e.clientX;
-    dragState.current.lastY = e.clientY;
-  }, []);
+    // ── Renderer ─────────────────────────────────────────────────────────────
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setSize(container.clientWidth, container.clientHeight);
+    renderer.setClearColor(0x000000, 0);
+    container.appendChild(renderer.domElement);
 
-  const onPointerUp = useCallback(() => {
-    dragState.current.isDragging = false;
+    // ── Scene & Camera ─────────────────────────────────────────────────────
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(
+      55,
+      container.clientWidth / container.clientHeight,
+      0.1,
+      100
+    );
+    camera.position.set(0, 0, 12);
+
+    // ── Lighting ────────────────────────────────────────────────────────────
+    scene.add(new THREE.AmbientLight(0xffffff, 0.3));
+    const redLight = new THREE.PointLight(NEON_RED, 3, 20);
+    redLight.position.set(0, 3, 5);
+    scene.add(redLight);
+    const blueLight = new THREE.PointLight(NEON_BLUE, 2, 20);
+    blueLight.position.set(0, -3, 5);
+    scene.add(blueLight);
+
+    // ── Network ─────────────────────────────────────────────────────────────
+    const { pulses, geomDispose, matDispose } = buildNeuralNetwork(scene);
+
+    // ── Controls ─────────────────────────────────────────────────────────────
+    const controls = new OrbitControls(camera, renderer.domElement);
+    controls.enableZoom = true;
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.07;
+    controls.minDistance = 5;
+    controls.maxDistance = 22;
+    controls.autoRotate = true;
+    controls.autoRotateSpeed = 0.6;
+
+    // ── Resize ───────────────────────────────────────────────────────────────
+    const ro = new ResizeObserver(() => {
+      renderer.setSize(container.clientWidth, container.clientHeight);
+      camera.aspect = container.clientWidth / container.clientHeight;
+      camera.updateProjectionMatrix();
+    });
+    ro.observe(container);
+
+    // ── Animation Loop ───────────────────────────────────────────────────────
+    let rafId: number;
+    const animate = () => {
+      rafId = requestAnimationFrame(animate);
+      pulses.forEach(p => {
+        p.t = (p.t + p.speed) % 1;
+        const pos = p.curve.getPoint(p.t);
+        p.mesh.position.copy(pos);
+        // Pulse size
+        const s = 0.8 + Math.sin(p.t * Math.PI) * 0.5;
+        p.mesh.scale.setScalar(s);
+      });
+      controls.update();
+      renderer.render(scene, camera);
+    };
+    animate();
+
+    // ── Cleanup ──────────────────────────────────────────────────────────────
+    return () => {
+      cancelAnimationFrame(rafId);
+      ro.disconnect();
+      controls.dispose();
+      geomDispose.forEach(g => g.dispose());
+      matDispose.forEach(m => m.dispose());
+      renderer.dispose();
+      if (container.contains(renderer.domElement)) {
+        container.removeChild(renderer.domElement);
+      }
+    };
   }, []);
 
   return (
     <div
-      style={{ width: '100%', height: '100%', cursor: 'grab' }}
-      onPointerDown={onPointerDown}
-      onPointerMove={onPointerMove}
-      onPointerUp={onPointerUp}
-      onPointerLeave={onPointerUp}
-    >
-      <Canvas camera={{ position: [0, 0, 7], fov: 50 }} gl={{ antialias: true, alpha: true }} style={{ background: 'transparent' }}>
-        <Scene dragState={dragState} />
-      </Canvas>
-    </div>
+      ref={mountRef}
+      style={{
+        width: '100%',
+        height: '100%',
+        minHeight: '420px',
+        borderRadius: '16px',
+        overflow: 'hidden',
+        cursor: 'grab',
+        background: 'radial-gradient(ellipse at center, rgba(255,42,42,0.06) 0%, transparent 70%)',
+        border: '1px solid rgba(255,42,42,0.15)',
+        boxSizing: 'border-box',
+      }}
+      title="Drag to rotate · Scroll to zoom"
+    />
   );
 };
 
